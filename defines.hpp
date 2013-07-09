@@ -33,7 +33,7 @@
 
 #define FUNCTIONRECORD(R, _, name) \
 	, \
-	FunctionWrapper<HASH(STRINGIZE_SEQ(0, name)), BOOST_PP_SEQ_ELEM(0, name)>
+	FunctionWrapper<HASH(STRINGIZE_SEQ(1, name)), BOOST_PP_SEQ_ELEM(0, name)>
 
 #define CREATEWRAPPER(SEQ) \
 	typedef Wrapper< \
@@ -50,14 +50,21 @@
 		break; \
 	} \
 
-
 #define CASE(R, args, T) \
 	case HASH( STRINGIZE_SEQ(1, T) ): \
 		wrapper::GetFunction< \
-			HASH(BOOST_PP_STRINGIZE(BOOST_PP_EXPAND(BOOST_PP_SEQ_ELEM(0, T)))) \
+			HASH(BOOST_PP_STRINGIZE(BOOST_PP_EXPAND(BOOST_PP_SEQ_ELEM(1, T)))) \
 		>{}( ENUMERATE(args) ); \
 		break; \
 
+#define GET_TYPE_NAME(f) \
+	BOOST_PP_CAT(DIRECT_TYPE_, f) \
+
+#define MAKE_TYPE(R, _, f) \
+	struct GET_TYPE_NAME(BOOST_PP_SEQ_ELEM(0, f)) { void operator()(FORMAL_PARAMETERS){ BOOST_PP_SEQ_ELEM(0, f)(ACTUAL_PARAMETERS); } };
+
+#define CREATE_STRUCTS(l) \
+	BOOST_PP_LIST_FOR_EACH(MAKE_TYPE, _, l) \
 
 template<class first, class... rest> // first ignored intentionally so macros are easier.
 struct Wrapper {
