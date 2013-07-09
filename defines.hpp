@@ -33,9 +33,10 @@
 
 #define FUNCTIONRECORD(R, _, name) \
 	, \
-	FunctionWrapper<HASH(STRINGIZE_SEQ(1, name)), BOOST_PP_SEQ_ELEM(0, name)>
+	FunctionWrapper<HASH(STRINGIZE_SEQ(1, name)), BOOST_PP_EXPAND(GET_TYPE_NAME(BOOST_PP_SEQ_ELEM(0, name)))>
 
 #define CREATEWRAPPER(SEQ) \
+	BOOST_PP_EXPAND(CREATE_STRUCTS(NEWLIST)) \
 	typedef Wrapper< \
 	FunctionWrapper<0, int> \
 	BOOST_PP_LIST_FOR_EACH(FUNCTIONRECORD, _, SEQ) \
@@ -44,7 +45,7 @@
 #define BIGSWITCH(strString, args) \
 	unsigned long strHash = operator""_toHash(strString.c_str(), strString.length()); \
 	switch(strHash) { \
-	BOOST_PP_LIST_FOR_EACH(CASE, args, FUNCTIONLIST) \
+	BOOST_PP_LIST_FOR_EACH(CASE, args, NEWLIST) \
 	default: \
 		std::cout<<"No such handle"<<std::endl; \
 		break; \
