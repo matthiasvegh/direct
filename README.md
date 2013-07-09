@@ -1,0 +1,4 @@
+direct
+======
+
+Compile time branching
