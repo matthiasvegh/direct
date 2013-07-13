@@ -79,7 +79,7 @@ using FunctionWrapper = boost::mpl::pair<boost::mpl::long_<l>, Function>;
 
 constexpr unsigned long operator "" _toHash ( const char* str, std::size_t length ) {
 	return (length>0)?
-			static_cast<unsigned long>(str[length-1]>='A'?str[length-1]-'A':(str[length-1]<'a'?str[length-1]-'0':str[length-1]-'A')) + 
+			static_cast<unsigned long>(str[length-1]>='A'?str[length-1]-'A':(str[length-1]<'a'?str[length-1]-'0':str[length-1]-'a')) + 
 			26*operator ""_toHash(str, length-1)
 		:0 ;
 }
