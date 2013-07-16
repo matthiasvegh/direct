@@ -18,12 +18,12 @@
 	((g6)(f), \
 	BOOST_PP_NIL))))))
 	
-int main(){
-
-	CREATEWRAPPER(NEWLIST)
-	std::string s;
-	std::cin>>s;
-	BIGSWITCH(s, (2, (1, 1.)))
-		
+int main(int argc, const char* argv[]){
+	if(argc > 1){
+		CREATEWRAPPER(NEWLIST)
+		std::string s(argv[1]);
+		auto v=BIGSWITCH(s, (2, (1, 1.)));
+		std::cout<<v<<std::endl;
+	}
 }
 
