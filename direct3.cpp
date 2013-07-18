@@ -24,6 +24,11 @@ int main(int argc, const char* argv[]){
 		std::string s(argv[1]);
 		auto v=BIGSWITCH(s, (2, (1, 1.)));
 		std::cout<<v<<std::endl;
+		std::cout<<
+			(DIRECT_SUCCESS?
+			"Switch found function":
+			"Switch didn't find function")
+			<<std::endl;
 	}
 }
 

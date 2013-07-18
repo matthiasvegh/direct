@@ -41,15 +41,18 @@
 	FunctionWrapper<0, int> \
 	BOOST_PP_LIST_FOR_EACH(FUNCTIONRECORD, _, SEQ) \
 	> wrapper; \
+	bool DIRECT_SUCCESS=false; \
 
 #define BIGSWITCH(strString, args) \
-	[&s](){ \
+	[&strString, &DIRECT_SUCCESS](){ \
+		std::string& DIRECT_STRING = strString; \
 		unsigned long strHash = operator""_toHash(strString.c_str(), strString.length()); \
 		typedef std::result_of<GET_TYPE_NAME(BOOST_PP_SEQ_ELEM(0, BOOST_PP_LIST_FIRST(NEWLIST)))(int, float)>::type DIRECT_RETURN_TYPE; \
 		DIRECT_RETURN_TYPE DIRECT_RESULT{}; \
 		switch(strHash) { \
 		BOOST_PP_LIST_FOR_EACH(CASE, args, NEWLIST) \
 		default: \
+			DIRECT_DEFAULT: \
 			std::cout<<"No such handle"<<std::endl; \
 			break; \
 		} \
@@ -58,17 +61,26 @@
 
 #define CASE(R, args, T) \
 	case HASH( STRINGIZE_SEQ(1, T) ): \
-		DIRECT_RESULT = \
-		wrapper::GetFunction< \
-			HASH(BOOST_PP_STRINGIZE(BOOST_PP_EXPAND(BOOST_PP_SEQ_ELEM(1, T)))) \
-		>{}( ENUMERATE(args) ); \
+		if( DIRECT_STRING == BOOST_PP_STRINGIZE(BOOST_PP_SEQ_ELEM(1, T))){ \
+			DIRECT_RESULT = \
+			wrapper::GetFunction< \
+				HASH(BOOST_PP_STRINGIZE(BOOST_PP_EXPAND(BOOST_PP_SEQ_ELEM(1, T)))) \
+			>{}( ENUMERATE(args) ); \
+			DIRECT_SUCCESS=true; \
+		} else { \
+			goto DIRECT_DEFAULT; \
+		} \
 		break; \
 
 #define GET_TYPE_NAME(f) \
 	BOOST_PP_CAT(DIRECT_TYPE_, f) \
 
 #define MAKE_TYPE(R, _, f) \
-	struct GET_TYPE_NAME(BOOST_PP_SEQ_ELEM(0, f)) { auto operator()(FORMAL_PARAMETERS) -> decltype(BOOST_PP_SEQ_ELEM(0, f)(ACTUAL_PARAMETERS)){ return BOOST_PP_SEQ_ELEM(0, f)(ACTUAL_PARAMETERS); } };
+	struct GET_TYPE_NAME(BOOST_PP_SEQ_ELEM(0, f)) { \
+	   	auto operator()(FORMAL_PARAMETERS) -> decltype(BOOST_PP_SEQ_ELEM(0, f)(ACTUAL_PARAMETERS)){ \
+			return BOOST_PP_SEQ_ELEM(0, f)(ACTUAL_PARAMETERS); \
+		} \
+	}; \
 
 #define CREATE_STRUCTS(l) \
 	BOOST_PP_LIST_FOR_EACH(MAKE_TYPE, _, l) \
